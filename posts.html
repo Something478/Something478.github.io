@@ -65,7 +65,18 @@ async function fetchPosts() {
       return;
     }
 
-    markdownFiles.sort((a, b) => b.name.localeCompare(a.name));
+    markdownFiles.sort((a, b) => {
+      const getDateFromFilename = (filename) => {
+        const dateMatch = filename.match(/^(\d{2})-(\d{2})-(\d{4})-/);
+        if (dateMatch) {
+          const [_, day, month, year] = dateMatch;
+          return new Date(year, month - 1, day);
+        }
+        return new Date(0);
+      };
+      
+      return getDateFromFilename(b.name) - getDateFromFilename(a.name);
+    });
 
     for (const file of markdownFiles) {
       try {
@@ -80,7 +91,7 @@ async function fetchPosts() {
         
         const title = file.name
           .replace('.md', '')
-          .replace(/^\d{4}-\d{2}-\d{2}-/, '')
+          .replace(/^\d{2}-\d{2}-\d{4}-/, '')
           .replace(/-/g, ' ')
           .replace(/\b\w/g, l => l.toUpperCase());
         
