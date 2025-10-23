@@ -11,7 +11,7 @@
 <div class="container">
   <header class="hero">
     <h1>Roblox Scripts</h1>
-    <p>Click "Copy" to grab the loadstring snippet for Roblox</p>
+    <p>Click "Copy" to grab the loadstring</p>
   </header>
 
   <div id="scripts-container">Loading scripts...</div>
@@ -46,7 +46,7 @@ async function fetchFiles(path = '') {
   const res = await fetch(url);
   const files = await res.json();
 
-  container.innerHTML = ''; // Clear loading message
+  container.innerHTML = '';
 
   for(const file of files) {
     if(file.type === 'file' && file.name.endsWith('.lua')) {
@@ -59,28 +59,26 @@ async function fetchFiles(path = '') {
         <h3>${file.path}</h3>
         <div class="code-box">
           <code>${loadstringText}</code>
-          <button class="copy-btn" data-text="${loadstringText.replace(/"/g, '&quot;')}">Copy</button>
+          <button class="copy-btn">Copy</button>
         </div>
       `;
+      
+      const copyBtn = div.querySelector('.copy-btn');
+      copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(loadstringText).then(() => {
+          const originalText = this.textContent;
+          this.textContent = 'Copied!';
+          setTimeout(() => {
+            this.textContent = originalText;
+          }, 2000);
+        });
+      });
+      
       container.appendChild(div);
     } else if(file.type === 'dir') {
       await fetchFiles(file.path);
     }
   }
-
-  // Add event listeners to all copy buttons
-  document.querySelectorAll('.copy-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      const textToCopy = this.getAttribute('data-text');
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        const originalText = this.textContent;
-        this.textContent = 'Copied!';
-        setTimeout(() => {
-          this.textContent = originalText;
-        }, 2000);
-      });
-    });
-  });
 }
 
 fetchFiles();
