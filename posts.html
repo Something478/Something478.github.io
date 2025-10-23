@@ -80,6 +80,7 @@ async function fetchPosts() {
         
         const title = file.name
           .replace('.md', '')
+          .replace(/^\d{4}-\d{2}-\d{2}-/, '')
           .replace(/-/g, ' ')
           .replace(/\b\w/g, l => l.toUpperCase());
         
@@ -88,9 +89,6 @@ async function fetchPosts() {
         const postDiv = document.createElement("div");
         postDiv.className = "post";
         postDiv.innerHTML = `
-          <div class="post-header">
-            <h2>${title}</h2>
-          </div>
           <div class="post-content">${html}</div>
         `;
         
@@ -111,17 +109,6 @@ async function fetchPosts() {
 
 const style = document.createElement('style');
 style.textContent = `
-  .post-header {
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
-    padding-bottom: 12px;
-  }
-  .post-header h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 1.6rem;
-    font-weight: 700;
-  }
   .post-content {
     line-height: 1.7;
   }
