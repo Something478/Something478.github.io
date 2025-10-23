@@ -50,3 +50,26 @@ iframe {
   body { padding: 10px; }
   iframe { height: 200px; }
 }
+
+.script-item {
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  border: none;
+  background: #0077cc;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #005fa3;
+}
+
