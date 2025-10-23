@@ -70,12 +70,17 @@ async function fetchPosts() {
         const dateMatch = filename.match(/^(\d{2})-(\d{2})-(\d{4})-/);
         if (dateMatch) {
           const [_, day, month, year] = dateMatch;
-          return new Date(year, month - 1, day);
+          // Create date properly - this handles future dates correctly
+          const date = new Date(year, month - 1, day);
+          return isNaN(date.getTime()) ? new Date(0) : date;
         }
         return new Date(0);
       };
       
-      return getDateFromFilename(b.name) - getDateFromFilename(a.name);
+      const dateA = getDateFromFilename(a.name);
+      const dateB = getDateFromFilename(b.name);
+      
+      return dateB - dateA; // Newest first
     });
 
     for (const file of markdownFiles) {
@@ -89,6 +94,14 @@ async function fetchPosts() {
         
         const md = await response.text();
         
+        // Extract and display the date from filename
+        const dateMatch = file.name.match(/^(\d{2})-(\d{2})-(\d{4})-/);
+        let dateDisplay = '';
+        if (dateMatch) {
+          const [_, day, month, year] = dateMatch;
+          dateDisplay = `<div class="post-date">${day}-${month}-${year}</div>`;
+        }
+        
         const title = file.name
           .replace('.md', '')
           .replace(/^\d{2}-\d{2}-\d{4}-/, '')
@@ -100,6 +113,10 @@ async function fetchPosts() {
         const postDiv = document.createElement("div");
         postDiv.className = "post";
         postDiv.innerHTML = `
+          <div class="post-header">
+            <h2>${title}</h2>
+            ${dateDisplay}
+          </div>
           <div class="post-content">${html}</div>
         `;
         
@@ -120,6 +137,30 @@ async function fetchPosts() {
 
 const style = document.createElement('style');
 style.textContent = `
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .post-header h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .post-date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
   .post-content {
     line-height: 1.7;
   }
