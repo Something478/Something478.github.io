@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StarFlow YouTube Videos</title>
+<title>StarFlow YouTube</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <nav>
   <a href="index.html">Home</a>
+  <a href="posts.html">Posts</a>
   <a href="youtube.html">YouTube</a>
 </nav>
 
@@ -17,8 +18,8 @@
 <div id="youtube-videos">Loading videos...</div>
 
 <script>
-const channelId = "UCqGyK3sOqETbcxve4arJE3w"; // your channel ID
-const apiKey = "AIzaSyBhH_SZJbw8OBCPllDmCIAmUlaMHvtz8bE"; // your API key
+const channelId = "UCqGyK3sOqETbcxve4arJE3w";
+const apiKey = "AIzaSyBhH_SZJbw8OBCPllDmCIAmUlaMHvtz8bE";
 
 fetch(`https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet&order=date&maxResults=10`)
   .then(res => res.json())
