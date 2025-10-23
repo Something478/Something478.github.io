@@ -66,21 +66,16 @@ async function fetchPosts() {
     }
 
     markdownFiles.sort((a, b) => {
-      const getDateFromFilename = (filename) => {
-        const dateMatch = filename.match(/^(\d{2})-(\d{2})-(\d{4})-/);
+      const getSortableDate = (filename) => {
+        const dateMatch = filename.match(/^(\d{2})-(\d{2})-(\d+)-/);
         if (dateMatch) {
           const [_, day, month, year] = dateMatch;
-          // Create date properly - this handles future dates correctly
-          const date = new Date(year, month - 1, day);
-          return isNaN(date.getTime()) ? new Date(0) : date;
+          return `${year.padStart(20, '0')}-${month}-${day}`;
         }
-        return new Date(0);
+        return '00000000000000000000-00-00';
       };
       
-      const dateA = getDateFromFilename(a.name);
-      const dateB = getDateFromFilename(b.name);
-      
-      return dateB - dateA; // Newest first
+      return getSortableDate(b.name).localeCompare(getSortableDate(a.name));
     });
 
     for (const file of markdownFiles) {
@@ -94,8 +89,7 @@ async function fetchPosts() {
         
         const md = await response.text();
         
-        // Extract and display the date from filename
-        const dateMatch = file.name.match(/^(\d{2})-(\d{2})-(\d{4})-/);
+        const dateMatch = file.name.match(/^(\d{2})-(\d{2})-(\d+)-/);
         let dateDisplay = '';
         if (dateMatch) {
           const [_, day, month, year] = dateMatch;
@@ -104,7 +98,7 @@ async function fetchPosts() {
         
         const title = file.name
           .replace('.md', '')
-          .replace(/^\d{2}-\d{2}-\d{4}-/, '')
+          .replace(/^\d{2}-\d{2}-\d+-/, '')
           .replace(/-/g, ' ')
           .replace(/\b\w/g, l => l.toUpperCase());
         
