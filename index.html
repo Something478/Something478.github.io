@@ -16,7 +16,10 @@
 
   <div class="content-grid">
     <div class="post">
-      <h3>Scripts</h3>
+      <div class="post-header">
+        <h3>Scripts</h3>
+        <span class="post-badge">For Executors</span>
+      </div>
       <p>Check out my Roblox scripts for executors</p>
       <a href="scripts.html" class="btn">View Scripts</a>
     </div>
@@ -53,6 +56,36 @@
     <div class="nav-text">YouTube</div>
   </a>
 </nav>
+
+<style>
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.post-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.post-badge {
+  background: var(--primary);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+</style>
 
 </body>
 </html>
