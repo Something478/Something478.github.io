@@ -44,12 +44,27 @@ const branch = 'main';
 async function fetchFiles(path = '') {
   const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
   const res = await fetch(url);
+  
+  if (!res.ok) {
+    container.innerHTML = '<div class="post"><p>Error loading scripts.</p></div>';
+    return;
+  }
+  
   const files = await res.json();
 
-  container.innerHTML = '';
+  if (path === '') {
+    container.innerHTML = '';
+  }
+
+  let scriptCount = 0;
 
   for(const file of files) {
     if(file.type === 'file' && file.name.endsWith('.lua')) {
+      // Skip LunarHub/Main.lua
+      if (file.path === 'LunarHub/Main.lua') {
+        continue;
+      }
+      
       const rawUrl = file.download_url;
       const loadstringText = `loadstring(game:HttpGet("${rawUrl}"))()`;
       
@@ -75,9 +90,14 @@ async function fetchFiles(path = '') {
       });
       
       container.appendChild(div);
+      scriptCount++;
     } else if(file.type === 'dir') {
       await fetchFiles(file.path);
     }
+  }
+
+  if (path === '' && scriptCount === 0) {
+    container.innerHTML = '<div class="post"><p>No scripts found.</p></div>';
   }
 }
 
