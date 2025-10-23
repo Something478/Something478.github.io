@@ -8,16 +8,61 @@
 </head>
 <body>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="posts.html">Posts</a>
-  <a href="youtube.html">YouTube</a>
-</nav>
+<div class="container">
+  <header class="hero">
+    <h1>Voidcore</h1>
+    <p>Scripts • Posts • YouTube</p>
+  </header>
 
-<header>
-    <h1>Welcome to Voidcore</h1>
-  <p>Here you can check out StarFlow's: Scripts, Posts and Youtube videos!</p>
-</header>
+  <div class="content-grid">
+    <!-- Scripts Preview -->
+    <div class="post">
+      <h3>Latest Scripts</h3>
+      <p>Check out my automation scripts and cool code snippets</p>
+      <a href="scripts.html">
+        <button class="btn">View Scripts</button>
+      </a>
+    </div>
+
+    <!-- Posts Preview -->
+    <div class="post">
+      <h3>Recent Posts</h3>
+      <p>Thoughts, tutorials, and updates</p>
+      <a href="posts.html">
+        <button class="btn">View Posts</button>
+      </a>
+    </div>
+
+    <!-- YouTube Preview -->
+    <div class="post">
+      <h3>YouTube Videos</h3>
+      <p>Latest content and tutorials</p>
+      <a href="youtube.html">
+        <button class="btn">Watch Videos</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav>
+  <a href="index.html" class="nav-item active">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-text">Home</div>
+  </a>
+  <a href="scripts.html" class="nav-item">
+    <div class="nav-icon">⚡</div>
+    <div class="nav-text">Scripts</div>
+  </a>
+  <a href="posts.html" class="nav-item">
+    <div class="nav-icon">📝</div>
+    <div class="nav-text">Posts</div>
+  </a>
+  <a href="youtube.html" class="nav-item">
+    <div class="nav-icon">🎥</div>
+    <div class="nav-text">YouTube</div>
+  </a>
+</nav>
 
 </body>
 </html>
