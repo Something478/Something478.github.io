@@ -3,20 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StarFlow Posts</title>
+<title>Posts - Voidcore</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="posts.html">Posts</a>
-  <a href="youtube.html">YouTube</a>
-</nav>
+<div class="container">
+  <header class="hero">
+    <h1>Posts</h1>
+    <p>Thoughts, tutorials, and updates</p>
+  </header>
 
-<h1>Posts</h1>
-<div id="posts-container">Loading posts...</div>
+  <div id="posts-container">Loading posts...</div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-text">Home</div>
+  </a>
+  <a href="scripts.html" class="nav-item">
+    <div class="nav-icon">⚡</div>
+    <div class="nav-text">Scripts</div>
+  </a>
+  <a href="posts.html" class="nav-item active">
+    <div class="nav-icon">📝</div>
+    <div class="nav-text">Posts</div>
+  </a>
+  <a href="youtube.html" class="nav-item">
+    <div class="nav-icon">🎥</div>
+    <div class="nav-text">YouTube</div>
+  </a>
+</nav>
 
 <script>
 const posts = [
