@@ -51,32 +51,64 @@ async function fetchPosts() {
 
     container.innerHTML = '';
 
-    // Filter only markdown files and sort by date (newest first)
+    // Filter only markdown files
     const markdownFiles = files.filter(file => 
       file.type === 'file' && file.name.endsWith('.md')
-    ).sort((a, b) => new Date(b.commit_date) - new Date(a.commit_date));
+    );
 
     if (markdownFiles.length === 0) {
       container.innerHTML = '<div class="post"><p>No posts found.</p></div>';
       return;
     }
 
-    for (const file of markdownFiles) {
+    // Fetch commit dates for each file
+    const postsWithDates = await Promise.all(
+      markdownFiles.map(async (file) => {
+        try {
+          // Get the commit history for this file to find the creation date
+          const commitsUrl = `https://api.github.com/repos/${repo}/commits?path=${postsPath}/${file.name}&sha=${branch}&per_page=1`;
+          const commitsRes = await fetch(commitsUrl);
+          const commits = await commitsRes.json();
+          
+          let commitDate = new Date();
+          if (commits.length > 0) {
+            commitDate = new Date(commits[0].commit.committer.date);
+          }
+
+          return {
+            ...file,
+            date: commitDate
+          };
+        } catch (error) {
+          console.error(`Error getting date for ${file.name}:`, error);
+          return {
+            ...file,
+            date: new Date() // Fallback to current date
+          };
+        }
+      })
+    );
+
+    // Sort by date (newest first)
+    postsWithDates.sort((a, b) => b.date - a.date);
+
+    for (const file of postsWithDates) {
       try {
         const rawUrl = file.download_url;
         const response = await fetch(rawUrl);
         const md = await response.text();
         
-        // Get file creation/modified date
-        const date = new Date(file.commit_date || file.created_at || file.updated_at);
-        const formattedDate = date.toLocaleDateString('en-US', {
+        const formattedDate = file.date.toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         });
         
-        // Use filename as title (remove .md extension)
-        const title = file.name.replace('.md', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        // Use filename as title (remove .md extension and format)
+        const title = file.name
+          .replace('.md', '')
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
         
         const html = marked.parse(md);
         
