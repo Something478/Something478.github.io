@@ -1,56 +1,116 @@
+/* --- General Styles --- */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   color: #111;
+  margin: 0;
+  padding: 0;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1, h2, h3 {
+  margin: 0.5em 0;
+}
+
+p {
+  line-height: 1.6;
+  margin: 0.5em 0;
+}
+
+/* --- Container --- */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
+
+/* --- Navigation --- */
 nav {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 20px;
   background: #fff;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 10px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 nav a {
   margin: 5px 15px;
-  text-decoration: none;
+  padding: 8px 12px;
   color: #0077cc;
   font-weight: bold;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
 }
 
 nav a:hover {
-  text-decoration: underline;
+  background: #0077cc;
+  color: #fff;
 }
 
-header, h1 {
+/* --- Header --- */
+header {
   text-align: center;
+  padding: 30px 15px;
 }
 
-.post, .video {
+/* --- Posts, Videos, Scripts --- */
+.post, .video, .script-item {
   background: #fff;
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  word-wrap: break-word;
+}
+
+.post h2, .video h3 {
+  margin-top: 0;
 }
 
 iframe {
   width: 100%;
-  height: 300px;
   border-radius: 10px;
+  border: none;
+  margin-top: 10px;
 }
 
-@media (max-width: 600px) {
-  body { padding: 10px; }
-  iframe { height: 200px; }
+/* --- Buttons --- */
+button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: none;
+  background: #0077cc;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
+button:hover {
+  background: #005fa3;
+}
+
+/* --- Code Snippets --- */
+code {
+  display: block;
+  background: #eaeaea;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  margin: 5px 0;
+  overflow-x: auto;
+}
+
+/* --- Script Items (Copy Button) --- */
 .script-item {
   background: #fff;
   padding: 10px;
@@ -59,17 +119,9 @@ iframe {
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-button {
-  margin-top: 5px;
-  padding: 5px 10px;
-  border: none;
-  background: #0077cc;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
+/* --- Responsive / Mobile --- */
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  nav { flex-direction: column; }
+  iframe { height: 200px; }
 }
-
-button:hover {
-  background: #005fa3;
-}
-
