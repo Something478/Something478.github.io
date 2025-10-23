@@ -38,23 +38,124 @@
 </nav>
 
 <script>
-const posts = [
-  "https://raw.githubusercontent.com/something478/Something478.github.io/main/posts/post1.md"
-];
-
 const container = document.getElementById('posts-container');
+const repo = 'something478/Something478.github.io';
+const branch = 'main';
+const postsPath = 'posts';
 
-posts.forEach(url => {
-  fetch(url)
-    .then(res => res.text())
-    .then(md => {
-      const html = marked.parse(md);
-      const postDiv = document.createElement("div");
-      postDiv.className = "post";
-      postDiv.innerHTML = html;
-      container.appendChild(postDiv);
-    });
-});
+async function fetchPosts() {
+  try {
+    const url = `https://api.github.com/repos/${repo}/contents/${postsPath}?ref=${branch}`;
+    const res = await fetch(url);
+    const files = await res.json();
+
+    container.innerHTML = '';
+
+    // Filter only markdown files and sort by date (newest first)
+    const markdownFiles = files.filter(file => 
+      file.type === 'file' && file.name.endsWith('.md')
+    ).sort((a, b) => new Date(b.commit_date) - new Date(a.commit_date));
+
+    if (markdownFiles.length === 0) {
+      container.innerHTML = '<div class="post"><p>No posts found.</p></div>';
+      return;
+    }
+
+    for (const file of markdownFiles) {
+      try {
+        const rawUrl = file.download_url;
+        const response = await fetch(rawUrl);
+        const md = await response.text();
+        
+        // Get file creation/modified date
+        const date = new Date(file.commit_date || file.created_at || file.updated_at);
+        const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        // Use filename as title (remove .md extension)
+        const title = file.name.replace('.md', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        const html = marked.parse(md);
+        
+        const postDiv = document.createElement("div");
+        postDiv.className = "post";
+        postDiv.innerHTML = `
+          <div class="post-header">
+            <h2>${title}</h2>
+            <span class="post-date">${formattedDate}</span>
+          </div>
+          <div class="post-content">${html}</div>
+        `;
+        
+        container.appendChild(postDiv);
+      } catch (error) {
+        console.error(`Error loading post ${file.name}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    container.innerHTML = '<div class="post"><p>Error loading posts.</p></div>';
+  }
+}
+
+// Add this CSS for post headers
+const style = document.createElement('style');
+style.textContent = `
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    padding-bottom: 12px;
+  }
+  .post-header h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.4rem;
+  }
+  .post-date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    margin-left: 16px;
+  }
+  .post-content {
+    line-height: 1.6;
+  }
+  .post-content h1, .post-content h2, .post-content h3 {
+    color: var(--text);
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+  .post-content p {
+    color: var(--text-light);
+    margin-bottom: 12px;
+  }
+  .post-content code {
+    background: rgba(139, 92, 246, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+  }
+  .post-content pre {
+    background: #1E1E1E;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .post-content pre code {
+    background: none;
+    padding: 0;
+  }
+`;
+document.head.appendChild(style);
+
+fetchPosts();
 </script>
 
 </body>
