@@ -5,17 +5,21 @@
 }
 
 :root {
-  --primary: #007AFF;
-  --primary-dark: #0056CC;
-  --bg: #F2F2F7;
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --text: #000000;
-  --text-light: #8E8E93;
+  --primary: #8B5CF6;
+  --primary-dark: #7C3AED;
+  --bg: #0F0F0F;
+  --card-bg: rgba(30, 30, 30, 0.8);
+  --text: #FFFFFF;
+  --text-light: #A1A1AA;
   --radius: 14px;
   --radius-sm: 10px;
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
-  --glass: rgba(255, 255, 255, 0.5);
+  --shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+  --shadow-hover: 0 12px 40px rgba(139, 92, 246, 0.2);
+  --glass: rgba(139, 92, 246, 0.1);
+}
+
+.hero {
+  background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 100%);
 }
 
 body {
