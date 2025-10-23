@@ -3,21 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StarFlow Roblox Scripts</title>
+<title>Scripts - Voidcore</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-  <a href="index.html">Home</a>
-  <a href="posts.html">Posts</a>
-  <a href="youtube.html">YouTube</a>
-  <a href="scripts.html">Scripts</a>
-</nav>
+<div class="container">
+  <header class="hero">
+    <h1>Roblox Scripts</h1>
+    <p>Click "Copy" to grab the loadstring snippet for Roblox</p>
+  </header>
 
-<h1>Roblox Scripts</h1>
-<p>Click "Copy" to grab the `loadstring` snippet for Roblox:</p>
-<div id="scripts-container">Loading scripts...</div>
+  <div id="scripts-container">Loading scripts...</div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-item">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-text">Home</div>
+  </a>
+  <a href="scripts.html" class="nav-item active">
+    <div class="nav-icon">⚡</div>
+    <div class="nav-text">Scripts</div>
+  </a>
+  <a href="posts.html" class="nav-item">
+    <div class="nav-icon">📝</div>
+    <div class="nav-text">Posts</div>
+  </a>
+  <a href="youtube.html" class="nav-item">
+    <div class="nav-icon">🎥</div>
+    <div class="nav-text">YouTube</div>
+  </a>
+</nav>
 
 <script>
 const container = document.getElementById('scripts-container');
@@ -35,14 +52,15 @@ async function fetchFiles(path = '') {
       const div = document.createElement('div');
       div.className = 'script-item';
       div.innerHTML = `
-        <strong>${file.path}</strong><br>
-        <code>loadstring(game:HttpGet("${rawUrl}"))()</code><br>
-        <button onclick="copyToClipboard('loadstring(game:HttpGet(\\\"${rawUrl}\\\"))()')">Copy</button>
-        <hr>
+        <h3>${file.path}</h3>
+        <div class="code-box">
+          <code>loadstring(game:HttpGet("${rawUrl}"))()</code>
+          <button class="copy-btn" onclick="copyToClipboard('loadstring(game:HttpGet(\\\"${rawUrl}\\\"))()')">Copy</button>
+        </div>
       `;
       container.appendChild(div);
     } else if(file.type === 'dir') {
-      await fetchFiles(file.path); // recursively fetch subdirectories
+      await fetchFiles(file.path);
     }
   }
 }
