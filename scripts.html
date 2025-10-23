@@ -46,16 +46,20 @@ async function fetchFiles(path = '') {
   const res = await fetch(url);
   const files = await res.json();
 
+  container.innerHTML = ''; // Clear loading message
+
   for(const file of files) {
     if(file.type === 'file' && file.name.endsWith('.lua')) {
       const rawUrl = file.download_url;
+      const loadstringText = `loadstring(game:HttpGet("${rawUrl}"))()`;
+      
       const div = document.createElement('div');
       div.className = 'script-item';
       div.innerHTML = `
         <h3>${file.path}</h3>
         <div class="code-box">
-          <code>loadstring(game:HttpGet("${rawUrl}"))()</code>
-          <button class="copy-btn" onclick="copyToClipboard('loadstring(game:HttpGet(\\\"${rawUrl}\\\"))()')">Copy</button>
+          <code>${loadstringText}</code>
+          <button class="copy-btn" data-text="${loadstringText.replace(/"/g, '&quot;')}">Copy</button>
         </div>
       `;
       container.appendChild(div);
@@ -63,11 +67,19 @@ async function fetchFiles(path = '') {
       await fetchFiles(file.path);
     }
   }
-}
 
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Copied to clipboard!');
+  // Add event listeners to all copy buttons
+  document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const textToCopy = this.getAttribute('data-text');
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalText = this.textContent;
+        this.textContent = 'Copied!';
+        setTimeout(() => {
+          this.textContent = originalText;
+        }, 2000);
+      });
+    });
   });
 }
 
