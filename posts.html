@@ -47,11 +47,15 @@ async function fetchPosts() {
   try {
     const url = `https://api.github.com/repos/${repo}/contents/${postsPath}?ref=${branch}`;
     const res = await fetch(url);
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch posts');
+    }
+    
     const files = await res.json();
 
     container.innerHTML = '';
 
-    // Filter only markdown files
     const markdownFiles = files.filter(file => 
       file.type === 'file' && file.name.endsWith('.md')
     );
@@ -61,50 +65,19 @@ async function fetchPosts() {
       return;
     }
 
-    // Fetch commit dates for each file
-    const postsWithDates = await Promise.all(
-      markdownFiles.map(async (file) => {
-        try {
-          // Get the commit history for this file to find the creation date
-          const commitsUrl = `https://api.github.com/repos/${repo}/commits?path=${postsPath}/${file.name}&sha=${branch}&per_page=1`;
-          const commitsRes = await fetch(commitsUrl);
-          const commits = await commitsRes.json();
-          
-          let commitDate = new Date();
-          if (commits.length > 0) {
-            commitDate = new Date(commits[0].commit.committer.date);
-          }
+    markdownFiles.sort((a, b) => b.name.localeCompare(a.name));
 
-          return {
-            ...file,
-            date: commitDate
-          };
-        } catch (error) {
-          console.error(`Error getting date for ${file.name}:`, error);
-          return {
-            ...file,
-            date: new Date() // Fallback to current date
-          };
-        }
-      })
-    );
-
-    // Sort by date (newest first)
-    postsWithDates.sort((a, b) => b.date - a.date);
-
-    for (const file of postsWithDates) {
+    for (const file of markdownFiles) {
       try {
         const rawUrl = file.download_url;
         const response = await fetch(rawUrl);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch post content');
+        }
+        
         const md = await response.text();
         
-        const formattedDate = file.date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-        
-        // Use filename as title (remove .md extension and format)
         const title = file.name
           .replace('.md', '')
           .replace(/-/g, ' ')
@@ -117,7 +90,6 @@ async function fetchPosts() {
         postDiv.innerHTML = `
           <div class="post-header">
             <h2>${title}</h2>
-            <span class="post-date">${formattedDate}</span>
           </div>
           <div class="post-content">${html}</div>
         `;
@@ -125,6 +97,10 @@ async function fetchPosts() {
         container.appendChild(postDiv);
       } catch (error) {
         console.error(`Error loading post ${file.name}:`, error);
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "post";
+        errorDiv.innerHTML = `<h2>${file.name.replace('.md', '')}</h2><p>Error loading this post.</p>`;
+        container.appendChild(errorDiv);
       }
     }
   } catch (error) {
@@ -133,56 +109,65 @@ async function fetchPosts() {
   }
 }
 
-// Add this CSS for post headers
 const style = document.createElement('style');
 style.textContent = `
   .post-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     border-bottom: 1px solid rgba(139, 92, 246, 0.3);
     padding-bottom: 12px;
   }
   .post-header h2 {
     margin: 0;
     color: var(--text);
-    font-size: 1.4rem;
-  }
-  .post-date {
-    color: var(--text-light);
-    font-size: 0.9rem;
-    white-space: nowrap;
-    margin-left: 16px;
+    font-size: 1.6rem;
+    font-weight: 700;
   }
   .post-content {
-    line-height: 1.6;
+    line-height: 1.7;
   }
   .post-content h1, .post-content h2, .post-content h3 {
     color: var(--text);
-    margin-top: 20px;
-    margin-bottom: 12px;
+    margin-top: 24px;
+    margin-bottom: 16px;
   }
   .post-content p {
     color: var(--text-light);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   .post-content code {
     background: rgba(139, 92, 246, 0.1);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'SF Mono', monospace;
+    color: var(--primary);
   }
   .post-content pre {
     background: #1E1E1E;
-    padding: 16px;
+    padding: 20px;
     border-radius: var(--radius-sm);
     overflow-x: auto;
-    margin: 16px 0;
+    margin: 20px 0;
+    border: 1px solid #333;
   }
   .post-content pre code {
     background: none;
     padding: 0;
+    color: #D4D4D4;
+  }
+  .post-content blockquote {
+    border-left: 4px solid var(--primary);
+    padding-left: 16px;
+    margin: 20px 0;
+    color: var(--text-light);
+    font-style: italic;
+  }
+  .post-content ul, .post-content ol {
+    color: var(--text-light);
+    margin-bottom: 16px;
+    padding-left: 24px;
+  }
+  .post-content li {
+    margin-bottom: 8px;
   }
 `;
 document.head.appendChild(style);
