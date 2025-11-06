@@ -41,33 +41,45 @@ const container = document.getElementById('scripts-container');
 const repo = 'Something478/Scripts';
 const branch = 'main';
 
+const skipPaths = [
+  'LunarHub/Main.lua',
+  'Clean.lua',
+  'Developer%20tools.lua',
+];
+
 async function fetchFiles(path = '') {
   const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-  const res = await fetch(url);
-  
-  if (!res.ok) {
-    container.innerHTML = '<div class="post"><p>Error loading scripts.</p></div>';
+  let res;
+
+  try {
+    res = await fetch(url);
+  } catch (err) {
+    container.innerHTML = '<div class="post"><p>⚠️ Network error loading scripts.</p></div>';
     return;
   }
-  
+
+  if (!res.ok) {
+    container.innerHTML = `<div class="post"><p>❌ Error ${res.status}: Failed to load scripts.</p></div>`;
+    return;
+  }
+
   const files = await res.json();
 
-  if (path === '') {
-    container.innerHTML = '';
-  }
+  if (path === '') container.innerHTML = '';
 
   let scriptCount = 0;
 
-  for(const file of files) {
-    if(file.type === 'file' && file.name.endsWith('.lua')) {
-      // Skip LunarHub/Main.lua
-      if (file.path === 'LunarHub/Main.lua') {
+  for (const file of files) {
+    if (file.type === 'file' && file.name.endsWith('.lua')) {
+
+      // Skip listed files
+      if (skipPaths.includes(file.path)) {
         continue;
       }
-      
+
       const rawUrl = file.download_url;
       const loadstringText = `loadstring(game:HttpGet("${rawUrl}"))()`;
-      
+
       const div = document.createElement('div');
       div.className = 'script-item';
       div.innerHTML = `
@@ -77,21 +89,19 @@ async function fetchFiles(path = '') {
           <button class="copy-btn">Copy</button>
         </div>
       `;
-      
-      const copyBtn = div.querySelector('.copy-btn');
-      copyBtn.addEventListener('click', function() {
+
+      div.querySelector('.copy-btn').addEventListener('click', function() {
         navigator.clipboard.writeText(loadstringText).then(() => {
-          const originalText = this.textContent;
+          const original = this.textContent;
           this.textContent = 'Copied!';
-          setTimeout(() => {
-            this.textContent = originalText;
-          }, 2000);
+          setTimeout(() => this.textContent = original, 2000);
         });
       });
-      
+
       container.appendChild(div);
       scriptCount++;
-    } else if(file.type === 'dir') {
+
+    } else if (file.type === 'dir') {
       await fetchFiles(file.path);
     }
   }
