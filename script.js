@@ -1,6 +1,3 @@
-// Common JavaScript functions that can be used across all pages
-
-// Function to change theme (for theme.html)
 function changeTheme(theme) {
     const root = document.documentElement;
     
@@ -41,7 +38,7 @@ function changeTheme(theme) {
             root.style.setProperty('--border', '#2a4d2a');
             break;
             
-        default: // dark theme
+        default:
             root.style.setProperty('--primary', '#6a0dad');
             root.style.setProperty('--primary-dark', '#4a0072');
             root.style.setProperty('--secondary', '#9c27b0');
@@ -53,11 +50,9 @@ function changeTheme(theme) {
             root.style.setProperty('--border', '#333');
     }
     
-    // Save theme preference to localStorage
     localStorage.setItem('voidcore-theme', theme);
 }
 
-// Load saved theme on page load for all pages
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('voidcore-theme') || 'dark';
     changeTheme(savedTheme);
