@@ -35,10 +35,20 @@
                 <p>Click "Copy" to grab the loadstring for your favorite scripts</p>
             </div>
 
+            <div class="card">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="script-search" placeholder="Search scripts...">
+                </div>
+            </div>
+
             <div id="scripts-container">
                 <div class="card">
                     <h2><i class="fas fa-code"></i> Available Scripts</h2>
                     <p>Loading scripts from GitHub repository...</p>
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -51,53 +61,176 @@
 
     <script src="script.js"></script>
     <script>
-        // Scripts Loading Function
-        function loadScripts() {
+        // Scripts Loading Function using actual GitHub repository
+        async function loadScripts() {
             const container = document.getElementById('scripts-container');
-            container.innerHTML = '<div class="card"><h2><i class="fas fa-code"></i> Available Scripts</h2><p>Loading scripts from GitHub repository...</p></div>';
+            container.innerHTML = `
+                <div class="card">
+                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                    <p>Loading scripts from GitHub repository...</p>
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            `;
             
-            // Simulate loading scripts (in a real implementation, this would fetch from GitHub API)
-            setTimeout(() => {
+            const repo = 'StarFIow/Scripts';
+            const branch = 'main';
+            
+            // Files to skip
+            const skipPaths = [
+                'Developer tools.lua',
+                'GUIs/PolariaV2.lua'
+            ];
+            
+            let allScripts = [];
+            
+            try {
+                // Fetch all files from the repository
+                await fetchFiles('', repo, branch, skipPaths, allScripts);
+                
+                if (allScripts.length === 0) {
+                    container.innerHTML = `
+                        <div class="card">
+                            <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                            <p>No scripts found in the repository.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display all scripts
+                displayScripts(allScripts, container);
+                
+                // Add search functionality
+                document.getElementById('script-search').addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const filteredScripts = allScripts.filter(script => 
+                        script.name.toLowerCase().includes(searchTerm) || 
+                        script.path.toLowerCase().includes(searchTerm)
+                    );
+                    displayScripts(filteredScripts, container);
+                });
+                
+            } catch (error) {
+                console.error('Error loading scripts:', error);
                 container.innerHTML = `
-                    <div class="script-item card">
-                        <h3>Infinite Yield</h3>
-                        <div class="code-box">
-                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()</code>
-                            <button class="copy-btn">Copy</button>
-                        </div>
+                    <div class="card">
+                        <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                        <p>Error loading scripts from GitHub. Please try again later.</p>
+                        <p class="error-message">${error.message}</p>
                     </div>
-                    <div class="script-item card">
-                        <h3>Owl Hub</h3>
-                        <div class="code-box">
-                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))()</code>
-                            <button class="copy-btn">Copy</button>
-                        </div>
+                `;
+            }
+        }
+        
+        // Recursive function to fetch files from GitHub
+        async function fetchFiles(path, repo, branch, skipPaths, allScripts) {
+            const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+                }
+                
+                const files = await response.json();
+                
+                for (const file of files) {
+                    if (file.type === 'file' && file.name.endsWith('.lua')) {
+                        // Check if this file should be skipped
+                        if (skipPaths.includes(file.path)) {
+                            console.log(`Skipping file: ${file.path}`);
+                            continue;
+                        }
+                        
+                        // Add to our scripts list
+                        allScripts.push({
+                            name: file.name,
+                            path: file.path,
+                            url: file.download_url,
+                            size: file.size,
+                            loadstring: `loadstring(game:HttpGet("${file.download_url}"))()`
+                        });
+                    } else if (file.type === 'dir') {
+                        // Recursively fetch files from subdirectory
+                        await fetchFiles(file.path, repo, branch, skipPaths, allScripts);
+                    }
+                }
+            } catch (error) {
+                throw new Error(`Failed to fetch files from GitHub: ${error.message}`);
+            }
+        }
+        
+        // Function to display scripts in the container
+        function displayScripts(scripts, container) {
+            if (scripts.length === 0) {
+                container.innerHTML = `
+                    <div class="card">
+                        <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                        <p>No scripts found matching your search.</p>
                     </div>
+                `;
+                return;
+            }
+            
+            let html = `
+                <div class="card">
+                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                    <p>Found ${scripts.length} script(s)</p>
+                </div>
+            `;
+            
+            scripts.forEach(script => {
+                html += `
                     <div class="script-item card">
-                        <h3>Dark Hub</h3>
+                        <div class="script-header">
+                            <h3>${script.path}</h3>
+                            <span class="file-size">${formatFileSize(script.size)}</span>
+                        </div>
                         <div class="code-box">
-                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/RandomAdamYT/DarkHub/master/Init"))()</code>
+                            <code>${script.loadstring}</code>
                             <button class="copy-btn">Copy</button>
                         </div>
                     </div>
                 `;
-                
-                // Add copy functionality
-                document.querySelectorAll('.copy-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const code = this.parentElement.querySelector('code').textContent;
-                        navigator.clipboard.writeText(code).then(() => {
-                            const original = this.textContent;
-                            this.textContent = 'Copied!';
-                            this.style.background = 'var(--success)';
-                            setTimeout(() => {
-                                this.textContent = original;
-                                this.style.background = '';
-                            }, 2000);
-                        });
+            });
+            
+            container.innerHTML = html;
+            
+            // Add copy functionality to all buttons
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const code = this.parentElement.querySelector('code').textContent;
+                    navigator.clipboard.writeText(code).then(() => {
+                        const original = this.textContent;
+                        this.textContent = 'Copied!';
+                        this.style.background = 'var(--success)';
+                        setTimeout(() => {
+                            this.textContent = original;
+                            this.style.background = '';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        this.textContent = 'Failed!';
+                        this.style.background = 'var(--error)';
+                        setTimeout(() => {
+                            this.textContent = 'Copy';
+                            this.style.background = '';
+                        }, 2000);
                     });
                 });
-            }, 1500);
+            });
+        }
+        
+        // Helper function to format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
         // Load scripts when page is ready
