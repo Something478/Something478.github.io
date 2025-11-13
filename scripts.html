@@ -10,21 +10,11 @@
 <body>
     <header>
         <div class="nav-container">
-            <a href="index.html" class="nav-tab">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="scripts.html" class="nav-tab active">
-                <i class="fas fa-code"></i> Scripts
-            </a>
-            <a href="youtube.html" class="nav-tab">
-                <i class="fab fa-youtube"></i> YouTube
-            </a>
-            <a href="contact.html" class="nav-tab">
-                <i class="fas fa-envelope"></i> Contact
-            </a>
-            <a href="theme.html" class="nav-tab">
-                <i class="fas fa-palette"></i> Theme
-            </a>
+            <a href="index.html" class="nav-tab">Home</a>
+            <a href="scripts.html" class="nav-tab active">Scripts</a>
+            <a href="youtube.html" class="nav-tab">YouTube</a>
+            <a href="contact.html" class="nav-tab">Contact</a>
+            <a href="theme.html" class="nav-tab">Theme</a>
         </div>
     </header>
 
@@ -32,23 +22,19 @@
         <section class="content-section">
             <div class="hero">
                 <h1>Roblox Scripts</h1>
-                <p>Click "Copy" to grab the loadstring for your favorite scripts</p>
+                <p>Hit that copy button to grab the loadstring and get gaming</p>
             </div>
 
             <div class="card">
                 <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="script-search" placeholder="Search scripts...">
+                    <input type="text" id="script-search" placeholder="Looking for something specific...">
                 </div>
             </div>
 
             <div id="scripts-container">
                 <div class="card">
-                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                    <p>Loading scripts from GitHub repository...</p>
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                    </div>
+                    <h2>All Our Scripts</h2>
+                    <p>Grabbing the latest scripts from our GitHub stash...</p>
                 </div>
             </div>
         </section>
@@ -56,53 +42,28 @@
 
     <footer>
         <p>&copy; 2023 Voidcore. All rights reserved.</p>
-        <p>Designed with <i class="fas fa-heart" style="color: var(--accent);"></i> for the Roblox community</p>
     </footer>
 
-    <script src="script.js"></script>
     <script>
-        // Scripts Loading Function using actual GitHub repository
         async function loadScripts() {
             const container = document.getElementById('scripts-container');
-            container.innerHTML = `
-                <div class="card">
-                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                    <p>Loading scripts from GitHub repository...</p>
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                    </div>
-                </div>
-            `;
+            container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Grabbing the latest scripts from our GitHub stash...</p></div>';
             
             const repo = 'StarFIow/Scripts';
             const branch = 'main';
-            
-            // Files to skip
-            const skipPaths = [
-                'Developer tools.lua',
-                'GUIs/PolariaV2.lua'
-            ];
-            
+            const skipPaths = ['Developer tools.lua', 'GUIs/PolariaV2.lua'];
             let allScripts = [];
             
             try {
-                // Fetch all files from the repository
                 await fetchFiles('', repo, branch, skipPaths, allScripts);
                 
                 if (allScripts.length === 0) {
-                    container.innerHTML = `
-                        <div class="card">
-                            <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                            <p>No scripts found in the repository.</p>
-                        </div>
-                    `;
+                    container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Damn, no scripts found right now. Must be taking a break. Check back later!</p></div>';
                     return;
                 }
                 
-                // Display all scripts
                 displayScripts(allScripts, container);
                 
-                // Add search functionality
                 document.getElementById('script-search').addEventListener('input', function(e) {
                     const searchTerm = e.target.value.toLowerCase();
                     const filteredScripts = allScripts.filter(script => 
@@ -113,18 +74,11 @@
                 });
                 
             } catch (error) {
-                console.error('Error loading scripts:', error);
-                container.innerHTML = `
-                    <div class="card">
-                        <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                        <p>Error loading scripts from GitHub. Please try again later.</p>
-                        <p class="error-message">${error.message}</p>
-                    </div>
-                `;
+                console.error('Script loading error:', error);
+                container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Shit, having trouble loading scripts right now. Something\'s messed up. Give it another shot in a bit.</p></div>';
             }
         }
         
-        // Recursive function to fetch files from GitHub
         async function fetchFiles(path, repo, branch, skipPaths, allScripts) {
             const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
             
@@ -132,20 +86,17 @@
                 const response = await fetch(url);
                 
                 if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+                    throw new Error(`GitHub API error: ${response.status}`);
                 }
                 
                 const files = await response.json();
                 
                 for (const file of files) {
                     if (file.type === 'file' && file.name.endsWith('.lua')) {
-                        // Check if this file should be skipped
                         if (skipPaths.includes(file.path)) {
-                            console.log(`Skipping file: ${file.path}`);
                             continue;
                         }
                         
-                        // Add to our scripts list
                         allScripts.push({
                             name: file.name,
                             path: file.path,
@@ -154,7 +105,6 @@
                             loadstring: `loadstring(game:HttpGet("${file.download_url}"))()`
                         });
                     } else if (file.type === 'dir') {
-                        // Recursively fetch files from subdirectory
                         await fetchFiles(file.path, repo, branch, skipPaths, allScripts);
                     }
                 }
@@ -163,24 +113,13 @@
             }
         }
         
-        // Function to display scripts in the container
         function displayScripts(scripts, container) {
             if (scripts.length === 0) {
-                container.innerHTML = `
-                    <div class="card">
-                        <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                        <p>No scripts found matching your search.</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Nothing matches your search. Try something else.</p></div>';
                 return;
             }
             
-            let html = `
-                <div class="card">
-                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
-                    <p>Found ${scripts.length} script(s)</p>
-                </div>
-            `;
+            let html = '<div class="card"><h2>All Our Scripts</h2><p>Found ' + scripts.length + ' badass script(s) for you</p></div>';
             
             scripts.forEach(script => {
                 html += `
@@ -191,7 +130,7 @@
                         </div>
                         <div class="code-box">
                             <code>${script.loadstring}</code>
-                            <button class="copy-btn">Copy</button>
+                            <button class="copy-btn">Copy This Shit</button>
                         </div>
                     </div>
                 `;
@@ -199,24 +138,22 @@
             
             container.innerHTML = html;
             
-            // Add copy functionality to all buttons
             document.querySelectorAll('.copy-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const code = this.parentElement.querySelector('code').textContent;
                     navigator.clipboard.writeText(code).then(() => {
                         const original = this.textContent;
-                        this.textContent = 'Copied!';
+                        this.textContent = 'Hell Yeah! Copied!';
                         this.style.background = 'var(--success)';
                         setTimeout(() => {
                             this.textContent = original;
                             this.style.background = '';
                         }, 2000);
                     }).catch(err => {
-                        console.error('Failed to copy text: ', err);
-                        this.textContent = 'Failed!';
+                        this.textContent = 'Fuck! Failed!';
                         this.style.background = 'var(--error)';
                         setTimeout(() => {
-                            this.textContent = 'Copy';
+                            this.textContent = 'Copy This Shit';
                             this.style.background = '';
                         }, 2000);
                     });
@@ -224,7 +161,6 @@
             });
         }
         
-        // Helper function to format file size
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -233,7 +169,6 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // Load scripts when page is ready
         document.addEventListener('DOMContentLoaded', loadScripts);
     </script>
 </body>
