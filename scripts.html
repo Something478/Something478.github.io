@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voidcore - Scripts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="nav-tab">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="scripts.html" class="nav-tab active">
+                <i class="fas fa-code"></i> Scripts
+            </a>
+            <a href="youtube.html" class="nav-tab">
+                <i class="fab fa-youtube"></i> YouTube
+            </a>
+            <a href="contact.html" class="nav-tab">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+            <a href="theme.html" class="nav-tab">
+                <i class="fas fa-palette"></i> Theme
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="content-section">
+            <div class="hero">
+                <h1>Roblox Scripts</h1>
+                <p>Click "Copy" to grab the loadstring for your favorite scripts</p>
+            </div>
+
+            <div id="scripts-container">
+                <div class="card">
+                    <h2><i class="fas fa-code"></i> Available Scripts</h2>
+                    <p>Loading scripts from GitHub repository...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Voidcore. All rights reserved.</p>
+        <p>Designed with <i class="fas fa-heart" style="color: var(--accent);"></i> for the Roblox community</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Scripts Loading Function
+        function loadScripts() {
+            const container = document.getElementById('scripts-container');
+            container.innerHTML = '<div class="card"><h2><i class="fas fa-code"></i> Available Scripts</h2><p>Loading scripts from GitHub repository...</p></div>';
+            
+            // Simulate loading scripts (in a real implementation, this would fetch from GitHub API)
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="script-item card">
+                        <h3>Infinite Yield</h3>
+                        <div class="code-box">
+                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()</code>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                    </div>
+                    <div class="script-item card">
+                        <h3>Owl Hub</h3>
+                        <div class="code-box">
+                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/CriShoux/OwlHub/master/OwlHub.txt"))()</code>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                    </div>
+                    <div class="script-item card">
+                        <h3>Dark Hub</h3>
+                        <div class="code-box">
+                            <code>loadstring(game:HttpGet("https://raw.githubusercontent.com/RandomAdamYT/DarkHub/master/Init"))()</code>
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Add copy functionality
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const code = this.parentElement.querySelector('code').textContent;
+                        navigator.clipboard.writeText(code).then(() => {
+                            const original = this.textContent;
+                            this.textContent = 'Copied!';
+                            this.style.background = 'var(--success)';
+                            setTimeout(() => {
+                                this.textContent = original;
+                                this.style.background = '';
+                            }, 2000);
+                        });
+                    });
+                });
+            }, 1500);
+        }
+
+        // Load scripts when page is ready
+        document.addEventListener('DOMContentLoaded', loadScripts);
+    </script>
+</body>
+</html>
