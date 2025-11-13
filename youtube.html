@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voidcore - YouTube</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="nav-tab">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="scripts.html" class="nav-tab">
+                <i class="fas fa-code"></i> Scripts
+            </a>
+            <a href="youtube.html" class="nav-tab active">
+                <i class="fab fa-youtube"></i> YouTube
+            </a>
+            <a href="contact.html" class="nav-tab">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+            <a href="theme.html" class="nav-tab">
+                <i class="fas fa-palette"></i> Theme
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="content-section">
+            <div class="hero">
+                <h1>YouTube Videos</h1>
+                <p>Latest content and tutorials from our channel</p>
+            </div>
+
+            <div id="youtube-videos">
+                <div class="card">
+                    <h2><i class="fab fa-youtube"></i> Latest Videos</h2>
+                    <p>Loading videos from YouTube channel...</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Voidcore. All rights reserved.</p>
+        <p>Designed with <i class="fas fa-heart" style="color: var(--accent);"></i> for the Roblox community</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // YouTube Videos Loading Function
+        function loadYouTubeVideos() {
+            const container = document.getElementById('youtube-videos');
+            container.innerHTML = '<div class="card"><h2><i class="fab fa-youtube"></i> Latest Videos</h2><p>Loading videos from YouTube channel...</p></div>';
+            
+            // Simulate loading videos (in a real implementation, this would use YouTube API)
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="video-grid">
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            <div class="video-info">
+                                <h3>How to Use Scripts in Roblox - Complete Guide</h3>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            <div class="video-info">
+                                <h3>Top 5 Roblox Scripts for 2023</h3>
+                            </div>
+                        </div>
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                            <div class="video-info">
+                                <h3>Creating Your First Roblox Script</h3>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        // Load videos when page is ready
+        document.addEventListener('DOMContentLoaded', loadYouTubeVideos);
+    </script>
+</body>
+</html>
