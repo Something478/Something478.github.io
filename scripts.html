@@ -22,19 +22,19 @@
         <section class="content-section">
             <div class="hero">
                 <h1>Roblox Scripts</h1>
-                <p>Hit that copy button to grab the loadstring and get gaming</p>
+                <p>Click Copy to grab the loadstring</p>
             </div>
 
             <div class="card">
                 <div class="search-box">
-                    <input type="text" id="script-search" placeholder="Looking for something specific...">
+                    <input type="text" id="script-search" placeholder="Search scripts...">
                 </div>
             </div>
 
             <div id="scripts-container">
                 <div class="card">
-                    <h2>All Our Scripts</h2>
-                    <p>Grabbing the latest scripts from our GitHub stash...</p>
+                    <h2>Available Scripts</h2>
+                    <p>Loading scripts from GitHub repository...</p>
                 </div>
             </div>
         </section>
@@ -47,7 +47,7 @@
     <script>
         async function loadScripts() {
             const container = document.getElementById('scripts-container');
-            container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Grabbing the latest scripts from our GitHub stash...</p></div>';
+            container.innerHTML = '<div class="card"><h2>Available Scripts</h2><p>Loading scripts from GitHub repository...</p></div>';
             
             const repo = 'StarFIow/Scripts';
             const branch = 'main';
@@ -58,7 +58,7 @@
                 await fetchFiles('', repo, branch, skipPaths, allScripts);
                 
                 if (allScripts.length === 0) {
-                    container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Damn, no scripts found right now. Must be taking a break. Check back later!</p></div>';
+                    container.innerHTML = '<div class="card"><h2>Available Scripts</h2><p>No scripts found in the repository.</p></div>';
                     return;
                 }
                 
@@ -74,8 +74,7 @@
                 });
                 
             } catch (error) {
-                console.error('Script loading error:', error);
-                container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Shit, having trouble loading scripts right now. Something\'s messed up. Give it another shot in a bit.</p></div>';
+                container.innerHTML = '<div class="card"><h2>Available Scripts</h2><p>Error loading scripts from GitHub. Please try again later.</p></div>';
             }
         }
         
@@ -115,11 +114,11 @@
         
         function displayScripts(scripts, container) {
             if (scripts.length === 0) {
-                container.innerHTML = '<div class="card"><h2>All Our Scripts</h2><p>Nothing matches your search. Try something else.</p></div>';
+                container.innerHTML = '<div class="card"><h2>Available Scripts</h2><p>No scripts found matching your search.</p></div>';
                 return;
             }
             
-            let html = '<div class="card"><h2>All Our Scripts</h2><p>Found ' + scripts.length + ' badass script(s) for you</p></div>';
+            let html = '<div class="card"><h2>Available Scripts</h2><p>Found ' + scripts.length + ' script(s)</p></div>';
             
             scripts.forEach(script => {
                 html += `
@@ -130,7 +129,7 @@
                         </div>
                         <div class="code-box">
                             <code>${script.loadstring}</code>
-                            <button class="copy-btn">Copy This Shit</button>
+                            <button class="copy-btn">Copy</button>
                         </div>
                     </div>
                 `;
@@ -143,17 +142,17 @@
                     const code = this.parentElement.querySelector('code').textContent;
                     navigator.clipboard.writeText(code).then(() => {
                         const original = this.textContent;
-                        this.textContent = 'Hell Yeah! Copied!';
+                        this.textContent = 'Copied!';
                         this.style.background = 'var(--success)';
                         setTimeout(() => {
                             this.textContent = original;
                             this.style.background = '';
                         }, 2000);
                     }).catch(err => {
-                        this.textContent = 'Fuck! Failed!';
+                        this.textContent = 'Failed!';
                         this.style.background = 'var(--error)';
                         setTimeout(() => {
-                            this.textContent = 'Copy This Shit';
+                            this.textContent = 'Copy';
                             this.style.background = '';
                         }, 2000);
                     });
